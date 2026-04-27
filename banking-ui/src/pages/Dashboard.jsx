@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../api/api";
+import api from "../api/Api.js";
 import Layout from "../components/Layout";
 import StatCard from "../components/StatCard";
 
