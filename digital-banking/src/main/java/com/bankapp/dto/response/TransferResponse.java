@@ -6,13 +6,18 @@ public class TransferResponse {
 
     private String message;
     private Long senderUserId;
-    private String receiverUsername;
+    private String receiverFullName;
     private BigDecimal amount;
 
-    public TransferResponse(String message, Long senderUserId, String receiverUsername, BigDecimal amount) {
+    public TransferResponse(
+            String message,
+            Long senderUserId,
+            String receiverFullName,
+            BigDecimal amount
+    ) {
         this.message = message;
         this.senderUserId = senderUserId;
-        this.receiverUsername = receiverUsername;
+        this.receiverFullName = receiverFullName;
         this.amount = amount;
     }
 
@@ -24,8 +29,8 @@ public class TransferResponse {
         return senderUserId;
     }
 
-    public String getReceiverUsername() {
-        return receiverUsername;
+    public String getReceiverFullName() {
+        return receiverFullName;
     }
 
     public BigDecimal getAmount() {

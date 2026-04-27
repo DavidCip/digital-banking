@@ -1,7 +1,7 @@
 package com.bankapp.controller;
 
 import com.bankapp.config.ApiPaths;
-import com.bankapp.dto.request.UserTransferRequest;
+import com.bankapp.dto.request.TransferRequest;
 import com.bankapp.dto.response.TransferResponse;
 import com.bankapp.service.TransferService;
 import jakarta.validation.Valid;
@@ -19,7 +19,7 @@ public class TransferController {
     }
 
     @PostMapping(ApiPaths.SEND)
-    public ResponseEntity<TransferResponse> transferToUser(@Valid @RequestBody UserTransferRequest request) {
+    public ResponseEntity<TransferResponse> transferToUser(@Valid @RequestBody TransferRequest request) {
         return ResponseEntity.ok(transferService.transferToUser(request));
     }
 }

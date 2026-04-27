@@ -1,6 +1,6 @@
 package com.bankapp.service.impl;
 
-import com.bankapp.dto.request.UserTransferRequest;
+import com.bankapp.dto.request.TransferRequest;
 import com.bankapp.dto.response.TransferResponse;
 import com.bankapp.entity.BankAccount;
 import com.bankapp.entity.Transaction;
@@ -33,13 +33,18 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     @Transactional
-    public TransferResponse transferToUser(UserTransferRequest request) {
+    public TransferResponse transferToUser(TransferRequest request) {
 
         User sender = userRepository.findById(request.getSenderUserId())
                 .orElseThrow(() -> new RuntimeException("Sender user not found"));
 
-        User receiver = userRepository.findByUsername(request.getReceiverUsername())
-                .orElseThrow(() -> new RuntimeException("Receiver user not found"));
+        User receiver = userRepository
+                .findByFirstNameAndLastName(
+                        request.getFirstName(),
+                        request.getLastName()
+                )
+                .orElseThrow(() ->
+                        new RuntimeException("Recipient not found"));
 
         if (sender.getId().equals(receiver.getId())) {
             throw new RuntimeException("You cannot transfer money to yourself");
