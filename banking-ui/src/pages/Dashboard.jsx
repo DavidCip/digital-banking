@@ -1,35 +1,56 @@
 import { useEffect, useState } from "react";
-import api from "../api/Api.js";
 import Layout from "../components/Layout";
 import StatCard from "../components/StatCard";
+import api from "../api/api";
+import { useAccount } from "../context/AccountContext";
 
 function Dashboard() {
     const userId = localStorage.getItem("userId");
+    const [message, setMessage] = useState("");
+    const [depositAmount, setDepositAmount] = useState("");
 
-    const [account, setAccount] = useState(null);
-    const [cards, setCards] = useState([]);
-    const [transactions, setTransactions] = useState([]);
+    const { account, cards, transactions, refreshAccountData } = useAccount();
 
     useEffect(() => {
-        loadDashboard();
+        refreshAccountData();
     }, []);
 
-    const loadDashboard = async () => {
-        try {
-            const accountRes = await api.get(`/accounts/user/${userId}`);
-            const cardsRes = await api.get(`/cards/user/${userId}`);
-            const txRes = await api.get(`/transactions/user/${userId}`);
+    const depositMoney = async (e) => {
+        e.preventDefault();
 
-            setAccount(accountRes.data);
-            setCards(cardsRes.data);
-            setTransactions(txRes.data.slice(0, 5));
+        try {
+            await api.post("/accounts/deposit", {
+                userId: Number(userId),
+                amount: Number(depositAmount)
+            });
+
+            setDepositAmount("");
+
+            await refreshAccountData();
+
+            setMessage("Money deposited successfully");
+
+            setTimeout(() => {
+                setMessage("");
+            }, 3000);
+
         } catch (error) {
-            alert("Could not load dashboard data");
+            setMessage(error.response?.data?.message || "Deposit failed");
+
+            setTimeout(() => {
+                setMessage("");
+            }, 3000);
         }
     };
 
     return (
         <Layout>
+            {message && (
+                <div className="success-message">
+                    {message}
+                </div>
+            )}
+
             <section className="dashboard-header">
                 <div>
                     <h1>Dashboard</h1>
@@ -57,6 +78,24 @@ function Dashboard() {
                 />
             </div>
 
+            <div className="panel deposit-panel">
+                <div>
+                    <h2>Quick Deposit</h2>
+                    <p className="muted">Add money instantly to your active balance.</p>
+                </div>
+
+                <form className="deposit-form" onSubmit={depositMoney}>
+                    <input
+                        type="number"
+                        value={depositAmount}
+                        onChange={(e) => setDepositAmount(e.target.value)}
+                        placeholder="Amount in RON"
+                    />
+
+                    <button type="submit">Deposit</button>
+                </form>
+            </div>
+
             <div className="dashboard-grid">
                 <div className="panel">
                     <h2>Your Cards</h2>
@@ -82,14 +121,16 @@ function Dashboard() {
                         <p className="muted">No transactions yet.</p>
                     ) : (
                         <div className="transaction-list">
-                            {transactions.map((tx) => (
+                            {transactions.slice(0, 5).map((tx) => (
                                 <div className="transaction-item" key={tx.id}>
                                     <div>
                                         <strong>{tx.type}</strong>
                                         <p>{tx.description}</p>
                                     </div>
 
-                                    <span>{tx.amount} {tx.currency}</span>
+                                    <span>
+                    {tx.amount} {tx.currency}
+                  </span>
                                 </div>
                             ))}
                         </div>

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import Layout from "../components/Layout";
 import api from "../api/Api.js";
+import { useAccount } from "../context/AccountContext";
 
 function Transfers() {
     const userId = localStorage.getItem("userId");
+
+    const { refreshAccountData } = useAccount();
 
     const [receiverFirstName, setReceiverFirstName] = useState("");
     const [receiverLastName, setReceiverLastName] = useState("");
@@ -21,6 +24,8 @@ function Transfers() {
                 lastName: receiverLastName,
                 amount: Number(userAmount)
             });
+
+            await refreshAccountData();
 
             alert("Transfer successful");
 
@@ -46,6 +51,8 @@ function Transfers() {
                 amount: Number(savingsAmount)
             });
 
+            await refreshAccountData();
+
             alert("Money moved to savings");
             setSavingsAmount("");
         } catch (error) {
@@ -64,6 +71,8 @@ function Transfers() {
                 userId: Number(userId),
                 amount: Number(savingsAmount)
             });
+
+            await refreshAccountData();
 
             alert("Money moved back to active balance");
             setSavingsAmount("");

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import Layout from "../components/Layout";
 import api from "../api/Api.js";
+import { useAccount } from "../context/AccountContext";
 
 function Payments() {
     const userId = localStorage.getItem("userId");
+
+    const { refreshAccountData } = useAccount();
 
     const [form, setForm] = useState({
         amount: "",
@@ -26,6 +29,8 @@ function Payments() {
                 beneficiary: form.beneficiary,
                 description: form.description
             });
+
+            await refreshAccountData();
 
             alert(type === "bill" ? "Bill paid successfully" : "Fine paid successfully");
 
