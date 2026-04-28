@@ -7,6 +7,9 @@ function MyAccount() {
     const userId = localStorage.getItem("userId");
     const navigate = useNavigate();
 
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("success");
+
     const [user, setUser] = useState(null);
     const [phone, setPhone] = useState("");
 
@@ -19,13 +22,22 @@ function MyAccount() {
         loadUser();
     }, []);
 
+    const showMessage = (text, type = "success") => {
+        setMessage(text);
+        setMessageType(type);
+
+        setTimeout(() => {
+            setMessage("");
+        }, 3000);
+    };
+
     const loadUser = async () => {
         try {
             const response = await api.get(`/users/${userId}`);
             setUser(response.data);
             setPhone(response.data.phone);
         } catch (error) {
-            alert("Could not load account data");
+            showMessage("Could not load account data", "error");
         }
     };
 
@@ -38,9 +50,9 @@ function MyAccount() {
             });
 
             setUser(response.data);
-            alert("Phone updated successfully");
+            showMessage("Phone updated successfully");
         } catch (error) {
-            alert(error.response?.data?.message || "Could not update phone");
+            showMessage(error.response?.data?.message || "Could not update phone", "error");
         }
     };
 
@@ -50,14 +62,14 @@ function MyAccount() {
         try {
             await api.put(`/users/${userId}/password`, passwordForm);
 
-            alert("Password updated successfully");
+            showMessage("Password updated successfully");
 
             setPasswordForm({
                 oldPassword: "",
                 newPassword: ""
             });
         } catch (error) {
-            alert(error.response?.data?.message || "Could not update password");
+            showMessage(error.response?.data?.message || "Could not update password", "error");
         }
     };
 
@@ -72,15 +84,20 @@ function MyAccount() {
             await api.delete(`/users/${userId}`);
 
             localStorage.clear();
-            alert("Account deactivated");
             navigate("/");
         } catch (error) {
-            alert(error.response?.data?.message || "Could not deactivate account");
+            showMessage(error.response?.data?.message || "Could not deactivate account", "error");
         }
     };
 
     return (
         <Layout>
+            {message && (
+                <div className={messageType === "success" ? "success-message" : "error-message"}>
+                    {message}
+                </div>
+            )}
+
             <section className="dashboard-header">
                 <div>
                     <h1>My Account</h1>

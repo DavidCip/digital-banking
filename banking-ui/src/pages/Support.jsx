@@ -6,6 +6,9 @@ function Support() {
     const userId = localStorage.getItem("userId");
 
     const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("success");
+
+    const [ticketMessage, setTicketMessage] = useState("");
     const [cardId, setCardId] = useState("");
     const [tickets, setTickets] = useState([]);
     const [cards, setCards] = useState([]);
@@ -15,12 +18,21 @@ function Support() {
         loadCards();
     }, []);
 
+    const showMessage = (text, type = "success") => {
+        setMessage(text);
+        setMessageType(type);
+
+        setTimeout(() => {
+            setMessage("");
+        }, 3000);
+    };
+
     const loadTickets = async () => {
         try {
             const response = await api.get(`/support/user/${userId}`);
             setTickets(response.data);
         } catch (error) {
-            alert("Could not load support tickets");
+            showMessage("Could not load support tickets", "error");
         }
     };
 
@@ -29,36 +41,55 @@ function Support() {
             const response = await api.get(`/cards/user/${userId}`);
             setCards(response.data);
         } catch (error) {
-            console.log("Could not load cards");
+            showMessage("Could not load cards", "error");
         }
     };
 
     const createTicket = async (type) => {
         try {
             if (type === "lost-card") {
+                if (!cardId) {
+                    showMessage("Please select a card first", "error");
+                    return;
+                }
+
                 await api.post("/support/lost-card", {
                     userId: Number(userId),
                     cardId: Number(cardId)
                 });
             } else {
+                const defaultMessages = {
+                    ticket: "General support request",
+                    "forgot-pin": "User requested PIN reset assistance",
+                    "call-assistance": "User requested a call from support"
+                };
+
                 await api.post(`/support/${type}`, {
                     userId: Number(userId),
-                    message
+                    message: ticketMessage.trim() || defaultMessages[type]
                 });
             }
 
-            alert("Support request created");
-            setMessage("");
+            showMessage("Support request created");
+
+            setTicketMessage("");
             setCardId("");
-            loadTickets();
-            loadCards();
+
+            await loadTickets();
+            await loadCards();
         } catch (error) {
-            alert(error.response?.data?.message || "Could not create support request");
+            showMessage(error.response?.data?.message || "Could not create support request", "error");
         }
     };
 
     return (
         <Layout>
+            {message && (
+                <div className={messageType === "success" ? "success-message" : "error-message"}>
+                    {message}
+                </div>
+            )}
+
             <section className="dashboard-header">
                 <div>
                     <h1>Support</h1>
@@ -74,8 +105,8 @@ function Support() {
                         <label>Message</label>
                         <textarea
                             rows="4"
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
+                            value={ticketMessage}
+                            onChange={(e) => setTicketMessage(e.target.value)}
                             placeholder="Tell us how we can help..."
                         />
 
@@ -83,11 +114,19 @@ function Support() {
                             General Ticket
                         </button>
 
-                        <button type="button" className="secondary-btn" onClick={() => createTicket("forgot-pin")}>
+                        <button
+                            type="button"
+                            className="secondary-btn"
+                            onClick={() => createTicket("forgot-pin")}
+                        >
                             Forgot PIN
                         </button>
 
-                        <button type="button" className="secondary-btn" onClick={() => createTicket("call-assistance")}>
+                        <button
+                            type="button"
+                            className="secondary-btn"
+                            onClick={() => createTicket("call-assistance")}
+                        >
                             Call Assistance
                         </button>
                     </form>

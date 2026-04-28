@@ -5,14 +5,25 @@ import { useAccount } from "../context/AccountContext";
 
 function Payments() {
     const userId = localStorage.getItem("userId");
-
     const { refreshAccountData } = useAccount();
+
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("success");
 
     const [form, setForm] = useState({
         amount: "",
         beneficiary: "",
         description: ""
     });
+
+    const showMessage = (text, type = "success") => {
+        setMessage(text);
+        setMessageType(type);
+
+        setTimeout(() => {
+            setMessage("");
+        }, 3000);
+    };
 
     const handleChange = (e) => {
         setForm({
@@ -32,7 +43,7 @@ function Payments() {
 
             await refreshAccountData();
 
-            alert(type === "bill" ? "Bill paid successfully" : "Fine paid successfully");
+            showMessage(type === "bill" ? "Bill paid successfully" : "Fine paid successfully");
 
             setForm({
                 amount: "",
@@ -40,12 +51,18 @@ function Payments() {
                 description: ""
             });
         } catch (error) {
-            alert(error.response?.data?.message || "Payment failed");
+            showMessage(error.response?.data?.message || "Payment failed", "error");
         }
     };
 
     return (
         <Layout>
+            {message && (
+                <div className={messageType === "success" ? "success-message" : "error-message"}>
+                    {message}
+                </div>
+            )}
+
             <section className="dashboard-header">
                 <div>
                     <h1>Payments</h1>

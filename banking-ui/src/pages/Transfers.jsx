@@ -5,14 +5,24 @@ import { useAccount } from "../context/AccountContext";
 
 function Transfers() {
     const userId = localStorage.getItem("userId");
-
     const { refreshAccountData } = useAccount();
+
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("success");
 
     const [receiverFirstName, setReceiverFirstName] = useState("");
     const [receiverLastName, setReceiverLastName] = useState("");
     const [userAmount, setUserAmount] = useState("");
-
     const [savingsAmount, setSavingsAmount] = useState("");
+
+    const showMessage = (text, type = "success") => {
+        setMessage(text);
+        setMessageType(type);
+
+        setTimeout(() => {
+            setMessage("");
+        }, 3000);
+    };
 
     const transferToUser = async (e) => {
         e.preventDefault();
@@ -27,17 +37,17 @@ function Transfers() {
 
             await refreshAccountData();
 
-            alert("Transfer successful");
+            showMessage("Transfer successful");
 
             setReceiverFirstName("");
             setReceiverLastName("");
             setUserAmount("");
         } catch (error) {
-            console.log("Backend error:", error.response?.data);
-            alert(
+            showMessage(
                 error.response?.data?.message ||
                 JSON.stringify(error.response?.data) ||
-                "Transfer failed"
+                "Transfer failed",
+                "error"
             );
         }
     };
@@ -53,14 +63,14 @@ function Transfers() {
 
             await refreshAccountData();
 
-            alert("Money moved to savings");
+            showMessage("Money moved to savings");
             setSavingsAmount("");
         } catch (error) {
-            console.log("Backend error:", error.response?.data);
-            alert(
+            showMessage(
                 error.response?.data?.message ||
                 JSON.stringify(error.response?.data) ||
-                "Transfer failed"
+                "Transfer failed",
+                "error"
             );
         }
     };
@@ -74,20 +84,26 @@ function Transfers() {
 
             await refreshAccountData();
 
-            alert("Money moved back to active balance");
+            showMessage("Money moved back to active balance");
             setSavingsAmount("");
         } catch (error) {
-            console.log("Backend error:", error.response?.data);
-            alert(
+            showMessage(
                 error.response?.data?.message ||
                 JSON.stringify(error.response?.data) ||
-                "Transfer failed"
+                "Transfer failed",
+                "error"
             );
         }
     };
 
     return (
         <Layout>
+            {message && (
+                <div className={messageType === "success" ? "success-message" : "error-message"}>
+                    {message}
+                </div>
+            )}
+
             <section className="dashboard-header">
                 <div>
                     <h1>Transfers</h1>

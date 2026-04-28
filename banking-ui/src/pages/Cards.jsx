@@ -1,21 +1,36 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import api from "../api/Api.js";
+import { useAccount } from "../context/AccountContext";
 
 function Cards() {
     const userId = localStorage.getItem("userId");
+    const { refreshAccountData } = useAccount();
+
     const [cards, setCards] = useState([]);
+
+    const [message, setMessage] = useState("");
+    const [messageType, setMessageType] = useState("success");
 
     useEffect(() => {
         loadCards();
     }, []);
+
+    const showMessage = (text, type = "success") => {
+        setMessage(text);
+        setMessageType(type);
+
+        setTimeout(() => {
+            setMessage("");
+        }, 3000);
+    };
 
     const loadCards = async () => {
         try {
             const response = await api.get(`/cards/user/${userId}`);
             setCards(response.data);
         } catch (error) {
-            alert("Could not load cards");
+            showMessage("Could not load cards", "error");
         }
     };
 
@@ -25,11 +40,12 @@ function Cards() {
                 userId: Number(userId)
             });
 
-            alert("Card created successfully");
-            loadCards();
+            await loadCards();
+            await refreshAccountData();
+
+            showMessage("Card created successfully");
         } catch (error) {
-            console.log(error.response?.data);
-            alert(error.response?.data?.message || "Could not create card");
+            showMessage(error.response?.data?.message || "Could not create card", "error");
         }
     };
 
@@ -37,15 +53,23 @@ function Cards() {
         try {
             await api.patch(`/cards/${cardId}/block`);
 
-            alert("Card blocked successfully");
-            loadCards();
+            await loadCards();
+            await refreshAccountData();
+
+            showMessage("Card blocked successfully");
         } catch (error) {
-            alert(error.response?.data?.message || "Could not block card");
+            showMessage(error.response?.data?.message || "Could not block card", "error");
         }
     };
 
     return (
         <Layout>
+            {message && (
+                <div className={messageType === "success" ? "success-message" : "error-message"}>
+                    {message}
+                </div>
+            )}
+
             <section className="dashboard-header">
                 <div>
                     <h1>Cards</h1>
