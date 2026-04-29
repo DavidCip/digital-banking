@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Layout({ children }) {
     const navigate = useNavigate();
@@ -15,14 +15,37 @@ function Layout({ children }) {
                 <h2>DigitalBank</h2>
 
                 <nav>
-                    <Link to="/dashboard">Dashboard</Link>
-                    <Link to="/cards">Cards</Link>
-                    <Link to="/transactions">Transactions</Link>
-                    <Link to="/transfers">Transfers</Link>
-                    <Link to="/payments">Payments</Link>
-                    <Link to="/exchange">Exchange</Link>
-                    <Link to="/support">Support</Link>
-                    <Link to="/account">My Account</Link>
+                    <NavLink to="/dashboard" className={({ isActive }) => isActive ? "active-link" : ""}>
+                        Dashboard
+                    </NavLink>
+
+                    <NavLink to="/transactions" className={({ isActive }) => isActive ? "active-link" : ""}>
+                        Transactions
+                    </NavLink>
+
+                    <NavLink to="/cards" className={({ isActive }) => isActive ? "active-link" : ""}>
+                        Cards
+                    </NavLink>
+
+                    <NavLink to="/transfers" className={({ isActive }) => isActive ? "active-link" : ""}>
+                        Transfers
+                    </NavLink>
+
+                    <NavLink to="/payments" className={({ isActive }) => isActive ? "active-link" : ""}>
+                        Payments
+                    </NavLink>
+
+                    <NavLink to="/exchange" className={({ isActive }) => isActive ? "active-link" : ""}>
+                        Exchange
+                    </NavLink>
+
+                    <NavLink to="/support" className={({ isActive }) => isActive ? "active-link" : ""}>
+                        Support
+                    </NavLink>
+
+                    <NavLink to="/account" className={({ isActive }) => isActive ? "active-link" : ""}>
+                        My Account
+                    </NavLink>
                 </nav>
 
                 <button onClick={logout} className="logout-btn">

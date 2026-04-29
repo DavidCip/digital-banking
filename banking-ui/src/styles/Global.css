@@ -779,3 +779,132 @@ button{
     margin-bottom:20px;
     border:1px solid #bbf7d0;
 }
+
+.sidebar nav a.active-link{
+    background:#2563eb;
+    color:white;
+    box-shadow:0 8px 20px rgba(37,99,235,.35);
+}
+
+@media (max-width: 1100px){
+    .forms-grid,
+    .dashboard-grid,
+    .stats-grid{
+        grid-template-columns:1fr;
+    }
+
+    .deposit-panel{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .deposit-form{
+        width:100%;
+    }
+
+    .deposit-form input{
+        width:100%;
+    }
+}
+
+@media (max-width: 800px){
+    .app-layout{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+        min-height:auto;
+        padding:20px;
+    }
+
+    .sidebar nav{
+        flex-direction:row;
+        overflow-x:auto;
+        gap:10px;
+        padding-bottom:8px;
+    }
+
+    .sidebar nav a{
+        white-space:nowrap;
+    }
+
+    .logout-btn{
+        margin-top:18px;
+    }
+
+    .main-content{
+        padding:22px;
+    }
+
+    .topbar{
+        justify-content:flex-start;
+    }
+
+    .dashboard-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:16px;
+    }
+
+    .cards-grid{
+        grid-template-columns:1fr;
+    }
+
+    .transactions-header{
+        display:none;
+    }
+
+    .transactions-row{
+        grid-template-columns:1fr;
+        gap:8px;
+    }
+}
+
+@media (max-width: 600px){
+    .login-page{
+        flex-direction:column;
+        justify-content:center;
+        padding:30px 20px;
+        gap:30px;
+    }
+
+    .login-left{
+        width:100%;
+        text-align:center;
+    }
+
+    .login-left h1{
+        font-size:42px;
+    }
+
+    .login-left p{
+        font-size:18px;
+    }
+
+    .login-card,
+    .auth-card{
+        width:100%;
+        padding:32px 24px;
+    }
+
+    .form-row{
+        flex-direction:column;
+    }
+
+    .stat-card h2{
+        font-size:26px;
+    }
+
+    .bank-card-preview h3{
+        font-size:18px;
+    }
+
+    .deposit-form{
+        flex-direction:column;
+    }
+
+    .deposit-form button{
+        width:100%;
+    }
+}
